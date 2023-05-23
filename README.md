@@ -4,6 +4,8 @@ Simple adapter for many language models
 
 ## Installation
 
+![construction](https://github.githubassets.com/images/icons/emoji/unicode/1f6a7.png) This is pre-alpha software. Anything can change without any notice.
+
 ```
 pip install git+https://github.com/mobarski/aidapter.git
 ```
