@@ -2,19 +2,35 @@
 
 Simple adapter for many language models
 
+## Installation
+
+```
+pip install git+https://github.com/mobarski/aidapter.git
+```
+
 ## Features
 
 [x] simple API
+
 [x] single interface to many models (remote and local)
+
 [x] parallel calls
+
 [x] caching (when temperature==0)
+
 [x] usage tracking
+
 [x] automatic retries
+
 [  ] response priming (great for older / completion oriented models)
+
 [  ] logging
+
 [  ] callbacks
 
-## Example usage
+
+
+## Usage examples
 
 ```python
 >>> import aidapter
