@@ -25,10 +25,10 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 - automatic retries
 
-- logging
-- callbacks
+- ~~logging~~
+- ~~callbacks~~
 
-- response priming (for older / completion oriented models)
+- ~~response priming (for older / completion oriented models)~~
 
 
 
