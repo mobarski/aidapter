@@ -137,6 +137,10 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.3.2
+
+- kvdb import fix
+
 ### 0.3
 
 - Cohere models

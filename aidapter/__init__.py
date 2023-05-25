@@ -1,4 +1,4 @@
-from kvdb import KV
+from .kvdb import KV
 
 def model(model_id, **kwargs):
 	brand,_,name = model_id.partition(':')

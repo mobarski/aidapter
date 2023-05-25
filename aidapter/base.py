@@ -4,7 +4,7 @@ from retry.api import retry_call
 from multiprocessing.dummy import Pool
 import hashlib
 
-from kvdb import DummyKV, KV
+from .kvdb import DummyKV, KV
 
 # TODO:
 # [x] usage
