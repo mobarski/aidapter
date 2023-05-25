@@ -14,17 +14,25 @@ import hashlib
 
 
 class BaseModel:
+    RENAME_KWARGS = {}
 
-    def __init__(self, name, kwargs):
+    def __init__(self, name, api_kwargs):
+        self.kwargs = {
+            'temperature': 0.0,
+            'limit': 100,
+            'stop': [],
+        }
+        self.kwargs.update(api_kwargs)
         self.name = name
         self.cache = DummyKV()
         self.usage = DummyKV()
-        self.kwargs = kwargs
         self.retry_tries = 5
         self.retry_delay = 0.1
         self.retry_backoff = 3
+        self.workers = 4
+        self.show_progress = False
 
-    def complete(self, prompt, **kw):
+    def complete(self, prompt, debug=False, **kw):
         if type(prompt)==str:
             resp = self.complete_one_cached(prompt, **kw)
             out = resp['text']
@@ -33,46 +41,67 @@ class BaseModel:
             out = [x['text'] for x in resp]
         self.usage.sync() # TODO: only if changed
         self.cache.sync() # TODO: only if changed
-        return out
+        if debug:
+            return resp
+        else:
+            return out
 
     # MOCK / TO OVERRIDE
 
-    def complete_one(self, prompt, system='', limit=100, stop=None, temperature=0.0) -> dict:
+    def complete_one(self, prompt, **kw) -> dict:
+        "mock"
+        kwargs = self.get_api_kwargs(kw, ['temperature','stop','limit'])
         # mock
+        system = kw.get('system','')
         full_prompt = f'{system}\n\n{prompt}' if system else prompt
         #
-        resp = {}
+        kwargs = self.rename_kwargs(kwargs)
         from time import sleep
         sleep(1)
+        resp = {}
+        #
         resp['text'] = f'{full_prompt} DUMMY RESPONSE'
         resp['usage'] = {'dummy_tokens': 3}
+        resp['kwargs'] = kwargs
         return resp
 
     # INTERNAL
 
-    def complete_one_retry(self, prompt, system='', limit=100, stop=None, temperature=0.0) -> dict:
+    def get_api_kwargs(self, kw, kw_names=[]):
+        kwargs = self.kwargs.copy()
+        for k in kw_names:
+            if k in kw:
+                kwargs[k] = kw[k]
+        return kwargs
+    
+    def rename_kwargs(self, kwargs):
+        return {self.RENAME_KWARGS.get(k,k):v for k,v in kwargs.items()}
+
+    def complete_one_retry(self, prompt, **kw) -> dict:
         return retry_call(
             self.complete_one,
             fargs=[prompt],
-            fkwargs={'system':system, 'limit':limit, 'stop':stop, 'temperature':temperature},
+            fkwargs=kw,
             tries=self.retry_tries,
             delay=self.retry_delay,
             backoff=self.retry_backoff,
         )
 
-    def complete_one_cached(self, prompt, system='', limit=100, stop=None, temperature=0.0, register=True) -> dict:
-        if temperature!=0.0:
-            resp = self.complete_one_retry(prompt, system=system, limit=limit, stop=stop, temperature=temperature)
+    def complete_one_cached(self, prompt, register=True, **kw) -> dict:
+        kwargs = self.get_api_kwargs(kw)
+        if kwargs.get('temperature',0) != 0:
+            resp = self.complete_one_retry(prompt, **kw)
             resp['usage'] = resp.get('usage', {})
             resp['usage']['cache_skip'] = 1
         else:
-            cache_key = md5(f'{prompt}/{system}/{limit}/{stop}')
+            kwargs_str = str([(k,kwargs[k]) for k in sorted(kwargs)])
+            cache_key = md5(f'{prompt}/{kwargs_str}')
             if cache_key in self.cache:
                 resp = self.cache[cache_key]
                 resp['usage'] = {f'cached_{k}':v for k,v in resp.get('usage',{}).items() if 'cache' not in k}
                 resp['usage']['cache_hit'] = 1
             else:
-                resp = self.complete_one_retry(prompt, system=system, limit=limit, stop=stop, temperature=temperature)
+                resp = self.complete_one_retry(prompt, **kw)
                 resp['usage'] = resp.get('usage', {})
                 resp['usage']['cache_miss'] = 1
                 self.cache[cache_key] = resp
@@ -80,16 +109,16 @@ class BaseModel:
             self.register_usage(resp['usage'])
         return resp
 
-    def complete_many(self, prompts, system='', limit=100, stop=None, temperature=0.0, workers=4, verbose=False) -> list[dict]:
+    def complete_many(self, prompts, **kw) -> list[dict]:
         def worker(prompt):
-            return self.complete_one_cached(prompt, system=system, limit=limit, stop=stop, temperature=temperature, register=False)
-        with Pool(workers) as pool:
+            return self.complete_one_cached(prompt, register=False, **kw)
+        with Pool(self.workers) as pool:
             out = []
-            with tqdm(total=len(prompts), disable=not verbose) as pbar:
+            with tqdm(total=len(prompts), disable=not self.show_progress) as progress:
                 for x in pool.imap(worker, prompts):
                     out.append(x)
                     self.register_usage(x.get('usage',{}))
-                    pbar.update()
+                    progress.update()
         return out
 
     def register_usage(self, usage):
@@ -119,7 +148,8 @@ class DummyKV(dict):
 # QUICK TEST 
 
 if __name__=="__main__":
-    m = BaseModel()
+    m = BaseModel('base',{'x':123})
+    print(m.complete('hello', stop=['aa','bb'], debug=True))
     print(m.complete(range(13), verbose=True))
     print('-'*80)
     print(m.complete(range(13), verbose=True))
