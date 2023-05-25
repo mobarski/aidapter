@@ -155,3 +155,10 @@ API key env. variable: **CO_API_KEY**
 
 - parallel calls / cache / usage tracking / retries
 - OpenAI chat models
+
+
+
+## Related projects
+
+- https://github.com/kagisearch/pyllms
+
