@@ -4,6 +4,8 @@ from retry.api import retry_call
 from multiprocessing.dummy import Pool
 import hashlib
 
+from kvdb import DummyKV, KV
+
 # TODO:
 # [x] usage
 # [x] cache (shelve protocol = dict + sync/close)
@@ -95,7 +97,7 @@ class BaseModel:
             resp['usage']['cache_skip'] = 1
         else:
             kwargs_str = str([(k,kwargs[k]) for k in sorted(kwargs)])
-            cache_key = md5(f'{prompt}/{kwargs_str}')
+            cache_key = self.name +':'+ md5(f'{prompt}/{kwargs_str}')
             if cache_key in self.cache:
                 resp = self.cache[cache_key]
                 resp['usage'] = {f'cached_{k}':v for k,v in resp.get('usage',{}).items() if 'cache' not in k}
@@ -122,6 +124,7 @@ class BaseModel:
         return out
 
     def register_usage(self, usage):
+        # TODO: self.usage[self.name]
         if usage:
             self.usage.agg(usage)
 
@@ -130,31 +133,18 @@ class BaseModel:
 def md5(text):
     return hashlib.md5(text.encode()).hexdigest()
 
-class DummyKV(dict):
-    def sync(self):
-        pass
-
-    def close(self):
-        pass
-
-    def agg(self, mapping):
-        if not mapping: return
-        for k,v in mapping.items():
-            if k not in self:
-                self[k] = v
-            else:
-                self[k] += v
-
 # QUICK TEST 
 
 if __name__=="__main__":
     m = BaseModel('base',{'x':123})
+    m.cache = KV('/tmp/aidapter','cache')
+    #m.usage = KV('/tmp/aidapter','usage')
     print(m.complete('hello', stop=['aa','bb'], debug=True))
-    print(m.complete(range(13), verbose=True))
+    print(m.complete(range(13)))
     print('-'*80)
-    print(m.complete(range(13), verbose=True))
+    print(m.complete(range(13)))
     print('-'*80)
-    print(m.complete(range(6), verbose=True, temperature=1.0))
+    print(m.complete(range(6), temperature=1.0))
     print('-'*80)
     print(m.cache)
     print('-'*80)

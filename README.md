@@ -12,23 +12,23 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 ## Features
 
-[x] simple API
+- simple API
 
-[x] single interface to many models (remote and local)
+- single interface to many models (remote and local)
 
-[x] parallel calls
+- parallel calls
 
-[x] caching (when temperature==0)
+- caching (when temperature==0)
+- disk caching
 
-[x] usage tracking
+- usage tracking
 
-[x] automatic retries
+- automatic retries
 
-[  ] logging
+- logging
+- callbacks
 
-[  ] callbacks
-
-[  ] response priming (for older / completion oriented models)
+- response priming (for older / completion oriented models)
 
 
 
@@ -41,9 +41,55 @@ pip install git+https://github.com/mobarski/aidapter.git
 4
 >>> model.complete(['2+2=','7*6='])
 ['4', '42']
+```
+
+```python
 >>> model.usage
 {'prompt_tokens': 24, 'completion_tokens': 2, 'total_tokens': 26, 'cache_miss': 2, 'cached_prompt_tokens': 12, 'cached_completion_tokens': 1, 'cached_total_tokens': 13, 'cache_hit': 1}
 ```
+
+```python
+>>> model.cache = aidapter.KV('/tmp/aidapter','cache')
+```
+
+
+
+## Supported models
+
+### OpenAI
+
+- `openai:gpt-4`
+- `openai:gpt-4-32k`
+
+- `openai:gpt-3.5-turbo`
+
+- `openai:text-davinci-003`
+- `openai:code-davinci-002`
+- ...
+
+API key env. variable: **OPENAI_API_KEY**
+
+### Anthropic
+
+- `anthropic:claude-v1`
+
+- `anthropic:claude-instant-v1`
+
+- `anthropic:claude-v1-100k`
+
+- `anthropic:claude-instant-v1-100k`
+- ...
+
+API key env. variable: **ANTHROPIC_API_KEY**
+
+### Cohere
+
+- `cohere:command`
+
+- `cohere:command-light`
+- ...
+
+API key env. variable: **CO_API_KEY**
 
 
 
@@ -90,6 +136,11 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 
 ## Change log
+
+### 0.3
+
+- Cohere models
+- disk cache
 
 ### 0.2
 
