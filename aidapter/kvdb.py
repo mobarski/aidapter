@@ -1,5 +1,5 @@
-import pickle
 import os
+import shelve
 
 
 class DummyKV(dict):
@@ -11,37 +11,83 @@ class DummyKV(dict):
     def close(self):
         self.sync()
 
-    def agg(self, mapping):
-        if not mapping: return
-        for k,v in mapping.items():
-            if k not in self:
-                self[k] = v
-            else:
-                self[k] += v
 
+# TODO: remove
+class PKV:
+    "persistent prefix-key-value store (based on the shelve module)"
+    separator = '/'
 
-class KV(DummyKV):
-    "persistent key-value store (disk-based)"
-
-    def __init__(self, db_dir, label):
-        self.db_dir = db_dir
-        self.label = label
-        self.path = os.path.join(db_dir, label+'.pkl')
+    def __init__(self, path, prefix=''):
+        self.prefix = prefix
+        root = os.path.dirname(path)
         try:
-            os.makedirs(db_dir)
+            os.makedirs(root)
         except:
             pass
-        if os.path.exists(self.path):
-            data = pickle.load(open(self.path,'rb'))
-            self.update(data)
+        self.db = shelve.open(path, flag='c')
+
+    def __getitem__(self, key):
+        return self.db[self._key(key)]
+
+    def __setitem__(self, key, value):
+        self.db[self._key(key)] = value
+
+    def __delitem__(self, key):
+        del self.db[self._key(key)]
     
+    def __contains__(self, key):
+        return self._key(key) in self.db
+
+    def __repr__(self):
+        return dict(self.items()).__repr__()
+
+    def get(self, key, default=None):
+        return self.db.get(self._key(key), default)
+
+    def keys(self):
+        return (k[len(self.prefix+self.separator):] for k in self.db.keys() if k.startswith(self.prefix+self.separator))
+
+    def values(self):
+        return (v for k,v in self.db.items() if k.startswith(self.prefix+self.separator))
+
+    def items(self):
+        return ((k[len(self.prefix+self.separator):],v) for k,v in self.db.items() if k.startswith(self.prefix+self.separator))
+
+    #
+
     def sync(self):
-        pickle.dump(dict(self.items()), open(self.path,'wb'))
+        self.db.sync()
+    
+    def close(self):
+        self.db.close()
+
+    def _key(self, key):
+        return f'{self.prefix}{self.separator}{key}'
+
+
+# TODO: remove
+class KV(PKV):
+    "persistent key-value store (based on the pickle module)"
+    separator = ''
+    def __init__(self, path):
+        super().__init__(path, prefix='')
+
 
 
 if __name__=="__main__":
-    db = KV('usunmnie','test1')
     #db['a'] = 1
     #db['b'] = 2
     #db.sync()
+    db = KV('usunmnie/kv.text')
+    #db = PKV('usunmnie/db3.shelve', 'xxx')
+    db['x'] = 42
+    db['y'] = 123
+    print(db['x'])
+    print(db['y'])
+    #del db['x']
+    print(list(db.keys()))
+    print(list(db.values()))
+    print(list(db.items()))
+    print(list(db.db.items()))
+    print(db.get('z',777))
     print(db)

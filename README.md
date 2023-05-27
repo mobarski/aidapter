@@ -1,6 +1,8 @@
 # aidapter
 
-Simple adapter for many language models
+Simple adapter for many language models -  remote (OpenAI, AnthropicAI, CohereAI) and local (transformers library).
+
+Facilitates loading of many new models (Guanaco, Falcon, RWKV, Vicuna, etc) in 16/8/4 bit modes.
 
 ## Installation
 
@@ -10,24 +12,17 @@ Simple adapter for many language models
 pip install git+https://github.com/mobarski/aidapter.git
 ```
 
+**Note**: each vendor API requires manual installation of dependencies.
+
 ## Features
 
-- simple API
-
-- single interface to many models (remote and local)
-
+- simple API interface to many models (remote and local)
 - parallel calls
-
-- caching (when temperature==0)
-- disk caching
-
+- caching
 - usage tracking
-
 - automatic retries
-
 - ~~logging~~
 - ~~callbacks~~
-
 - ~~response priming (for older / completion oriented models)~~
 
 
@@ -39,7 +34,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 >>> model = aidapter.model('openai:gpt-3.5-turbo') # uses OPENAI_API_KEY env variable
 >>> model.complete('2+2=')
 4
->>> model.complete(['2+2=','7*6='])
+>>> model.complete(['2+2=','7*6=']) # parallel
 ['4', '42']
 ```
 
@@ -49,7 +44,9 @@ pip install git+https://github.com/mobarski/aidapter.git
 ```
 
 ```python
->>> model.cache = aidapter.KV('/tmp/aidapter','cache')
+>>> import shelve
+>>> model.cache = shelve.open('/tmp/aidapter.cache') # persistant disk cache
+>>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking (total and daily, can be customised)
 ```
 
 
@@ -90,6 +87,15 @@ API key env. variable: **ANTHROPIC_API_KEY**
 - ...
 
 API key env. variable: **CO_API_KEY**
+
+### Transformers
+
+- `transformers:TheBloke/guanaco-7B-HF`
+- `transformers:tiiuae/falcon-7b`
+- `transformers:RWKV/rwkv-raven-3b`
+- `transformers:ehartford/Wizard-Vicuna-13B-Uncensored`
+- `transformers:roneneldan/TinyStories-33M`
+- ...
 
 
 
@@ -136,6 +142,20 @@ API key env. variable: **CO_API_KEY**
 
 
 ## Change log
+
+### 0.4
+
+- initial support for local transformers models
+
+  - float16 (add ":16bit" to the model name)
+
+  - load_in_8bit (add ":8bit" to the model name)
+
+  - load_in_4bit (add ":4bit" to the model name)
+
+- cache = use | skip | force
+
+- shelve based persistence (for cache and usage)
 
 ### 0.3.2
 
