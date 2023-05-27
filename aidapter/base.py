@@ -5,8 +5,6 @@ from multiprocessing.dummy import Pool
 from datetime import date
 import hashlib
 
-from .kvdb import DummyKV
-
 # TODO:
 # [x] usage
 # [x] cache (shelve protocol = dict + sync/close)
@@ -147,3 +145,10 @@ class BaseModel:
 
 def md5(text):
     return hashlib.md5(text.encode()).hexdigest()
+
+class DummyKV(dict):
+    "in-memory key-value store with shelve-like interface"
+    def sync(self):
+        pass
+    def close(self):
+        pass

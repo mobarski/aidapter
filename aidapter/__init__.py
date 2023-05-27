@@ -1,4 +1,3 @@
-from .kvdb import KV,PKV
 
 def model(model_id, **kwargs):
 	"model factory function"

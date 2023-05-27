@@ -29,19 +29,18 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 ## Usage examples
 
+**simple usage:**
+
 ```python
 >>> import aidapter
 >>> model = aidapter.model('openai:gpt-3.5-turbo') # uses OPENAI_API_KEY env variable
 >>> model.complete('2+2=')
 4
->>> model.complete(['2+2=','7*6=']) # parallel
+>>> model.complete(['2+2=','7*6=']) # parallel calls
 ['4', '42']
 ```
 
-```python
->>> model.usage
-{'prompt_tokens': 24, 'completion_tokens': 2, 'total_tokens': 26, 'cache_miss': 2, 'cached_prompt_tokens': 12, 'cached_completion_tokens': 1, 'cached_total_tokens': 13, 'cache_hit': 1}
-```
+**persistent cache and usage tracking:**
 
 ```python
 >>> import shelve
@@ -146,6 +145,7 @@ API key env. variable: **CO_API_KEY**
 ### 0.4.1
 
 - remove prompt from transformers output
+- removed kvdb
 
 ### 0.4
 
