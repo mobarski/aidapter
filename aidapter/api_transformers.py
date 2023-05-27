@@ -48,7 +48,7 @@ class TextModel(base.BaseModel):
         resp_text = self.tokenier.decode(resp[0], skip_special_tokens=True)
         #
         out = {}
-        out['text'] = resp_text
+        out['text'] = resp_text[len(full_prompt):]
         out['usage'] = {} # TODO
         out['kwargs'] = kwargs
         out['resp'] = {'resp':resp, 'prompt_tokens':prompt_tokens}

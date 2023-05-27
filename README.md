@@ -143,6 +143,10 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.4.1
+
+- remove prompt from transformers output
+
 ### 0.4
 
 - initial support for local transformers models
