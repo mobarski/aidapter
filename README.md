@@ -2,7 +2,7 @@
 
 Simple adapter for many language models -  remote (OpenAI, AnthropicAI, CohereAI) and local (transformers library).
 
-Facilitates loading of many new models (Guanaco, Falcon, RWKV, Vicuna, etc) in 16/8/4 bit modes.
+Facilitates loading of many new models (Guanaco, Falcon, Vicuna, etc) in 16/8/4 bit modes.
 
 ## Installation
 
