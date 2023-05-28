@@ -21,10 +21,6 @@ pip install git+https://github.com/mobarski/aidapter.git
 - caching
 - usage tracking
 - automatic retries
-- ~~logging~~
-- ~~callbacks~~
-- ~~response priming (for older / completion oriented models)~~
-
 
 
 ## Usage examples
