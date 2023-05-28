@@ -45,9 +45,14 @@ pip install git+https://github.com/mobarski/aidapter.git
 ```python
 >>> import shelve
 >>> model.cache = shelve.open('/tmp/aidapter.cache') # persistant disk cache
->>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking (total and daily, can be customised)
+>>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking
 ```
 
+**multiple models:**
+```python
+m1 = aidapter.model('transformers:ehartford/Wizard-Vicuna-13B-Uncensored:4bit') # 4 bit mode
+m2 = aidapter.model('anthropic:claude-instant-v1') # uses ANTHROPIC_API_KEY env variable
+```
 
 
 ## API
