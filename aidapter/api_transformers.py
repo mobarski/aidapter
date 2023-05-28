@@ -19,6 +19,8 @@ class TextModel(base.BaseModel):
         kw = {}
         if '16bit' in options:
             kw['torch_dtype'] = torch.float16
+        elif 'bloat16' in options:
+            kw['torch_dtype'] = torch.bfloat16
         elif '8bit' in options:
             kw['load_in_8bit'] = True
         elif '4bit' in options:
@@ -39,18 +41,22 @@ class TextModel(base.BaseModel):
         kwargs['prompt'] = full_prompt
         #
         #kwargs = self.rename_kwargs(kwargs) # NOT USED - direct mapping below
+        final_kwargs = dict(
+            max_new_tokens = kwargs['limit'],
+            temperature = kwargs['temperature'],
+            pad_token_id = self.tokenier.eos_token_id,
+        )
         prompt_tokens = self.tokenier.encode(full_prompt, return_tensors='pt')
         resp = self.model.generate(
                 prompt_tokens.to("cuda"),
-                max_new_tokens=kwargs['limit'],
-                temperature=kwargs['temperature'],
+                **final_kwargs
             )
         resp_text = self.tokenier.decode(resp[0], skip_special_tokens=True)
         #
         out = {}
         out['text'] = resp_text[len(full_prompt):]
         out['usage'] = {} # TODO
-        out['kwargs'] = kwargs
+        out['kwargs'] = final_kwargs
         out['resp'] = {'resp':resp, 'prompt_tokens':prompt_tokens}
         # TODO usage
         # TODO error

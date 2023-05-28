@@ -3,6 +3,7 @@ from retry.api import retry_call
 
 from multiprocessing.dummy import Pool
 from datetime import date
+from time import time
 import hashlib
 
 # TODO:
@@ -53,7 +54,7 @@ class BaseModel:
 
     def complete_one(self, prompt, **kw) -> dict:
         "mock"
-        kwargs = self.get_api_kwargs(kw, ['temperature','stop','limit'])
+        kwargs = self.get_api_kwargs(kw)
         # mock
         system = kw.get('system','')
         full_prompt = f'{system}\n\n{prompt}' if system else prompt
@@ -70,9 +71,9 @@ class BaseModel:
 
     # INTERNAL
 
-    def get_api_kwargs(self, kw, kw_names=[]):
+    def get_api_kwargs(self, kw):
         kwargs = self.kwargs.copy()
-        for k in kw_names:
+        for k in ['temperature','stop','limit']:
             if k in kw:
                 kwargs[k] = kw[k]
         return kwargs
@@ -91,6 +92,7 @@ class BaseModel:
         )
 
     def complete_one_cached(self, prompt, cache='use', register=True, **kw) -> dict:
+        t0 = time()
         kwargs = self.get_api_kwargs(kw)
         if (kwargs.get('temperature',0)!=0 or cache=='skip') and cache!='force':
             resp = self.complete_one_retry(prompt, **kw)
@@ -108,6 +110,7 @@ class BaseModel:
                 resp['usage'] = resp.get('usage', {})
                 resp['usage']['cache_miss'] = 1
                 self.cache[cache_key] = resp
+        resp['usage']['time'] = time() - t0
         if register:
             self.register_usage(resp['usage'])
         return resp

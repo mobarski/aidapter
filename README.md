@@ -16,7 +16,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 ## Features
 
-- simple API interface to many models (remote and local)
+- simple, unified API to many models (remote and local)
 - parallel calls
 - caching
 - usage tracking
@@ -47,6 +47,51 @@ pip install git+https://github.com/mobarski/aidapter.git
 >>> model.cache = shelve.open('/tmp/aidapter.cache') # persistant disk cache
 >>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking (total and daily, can be customised)
 ```
+
+
+
+## API
+
+
+
+**aidapter.model**(model_id, \*\*api_kwargs) **-> model**
+
+- `model_id` - model identifier in the following format `<vendor_name>:<model_name>`
+- `api_kwargs` - default API arguments
+
+
+
+**model.complete**(prompt, system='', stop=[], limit=100, temperature=0, cache='use', debug=False) **-> str | list | dict**
+
+- `prompt` - main prompt or list of prompts
+
+- `system` - system prompt
+
+- `stop` - list of strings upon which to stop generating
+
+- `limit` - maximum number of tokens to generate before stopping (aka max_new_tokens, max_tokens_to_sample)
+
+- `temperature` - amount of randomness
+- `cache` - cache usage:
+  - `use` - use the cache if the temperature is 0 (default)
+  - `skip` - don't use the cache
+  - `force` - use the cache even if the temperature is not 0
+
+- `debug` - if True, the function will return a dictionary (or a list of dictionaries) containing internal objects / values
+
+
+
+**model configuration:**
+
+- `model.workers` - number of concurrent workers for parallel completion (default=4)
+
+- `model.show_progress` - show progress bar when performing parallel completion (default=False)
+
+- `model.retry_tries` - maximum number of retry attempts (default=5)
+
+- `model.retry_delay` - initial delay between retry attempts (default=0.1)
+
+- `model.retry_backoff` - multiplier applied to the delay between retry attempts (default=3)
 
 
 
@@ -90,55 +135,18 @@ API key env. variable: **CO_API_KEY**
 ### Transformers
 
 - `transformers:TheBloke/guanaco-7B-HF`
+
 - `transformers:tiiuae/falcon-7b`
+
 - `transformers:RWKV/rwkv-raven-3b`
+
 - `transformers:ehartford/Wizard-Vicuna-13B-Uncensored`
+
 - `transformers:roneneldan/TinyStories-33M`
+
 - ...
 
-
-
-## API
-
-
-
-**aidapter.model**(model_id, \*\*api_kwargs) **-> model**
-
-- `model_id` - model identifier in the following format `<vendor_name>:<model_name>`
-- `api_kwargs` - default API arguments
-
-
-
-**model.complete**(prompt, system='', stop=[], limit=100, temperature=0, debug=False) **-> str | list | dict**
-
-- `prompt` - main prompt or list of prompts
-
-- `system` - system prompt
-
-- `stop` - list of strings upon which to stop generating
-
-- `limit` - maximum number of tokens to generate before stopping (aka max_new_tokens, max_tokens_to_sample)
-
-- `temperature` - amount of randomness
-- `debug` - if True, the function will return a dictionary (or a list of dictionaries) containing internal objects / values
-
-
-
-**model configuration:**
-
-- `model.workers` - number of concurrent workers for parallel completion (default=4)
-
-- `model.show_progress` - show progress bar when performing parallel completion (default=False)
-
-- `model.retry_tries` - maximum number of retry attempts (default=5)
-
-- `model.retry_delay` - initial delay between retry attempts (default=0.1)
-
-- `model.retry_backoff` - multiplier applied to the delay between retry attempts (default=3)
-
-
-
-
+  
 
 ## Change log
 
@@ -146,6 +154,9 @@ API key env. variable: **CO_API_KEY**
 
 - remove prompt from transformers output
 - removed kvdb
+- usage['time']
+- fixed pad_token_id
+- fixed limit in transformer models
 
 ### 0.4
 
