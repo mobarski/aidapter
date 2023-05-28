@@ -46,8 +46,8 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 **multiple models:**
 ```python
-m1 = aidapter.model('transformers:ehartford/Wizard-Vicuna-13B-Uncensored:4bit') # 4 bit mode
-m2 = aidapter.model('anthropic:claude-instant-v1') # uses ANTHROPIC_API_KEY env variable
+>>> m1 = aidapter.model('transformers:ehartford/Wizard-Vicuna-13B-Uncensored:4bit') # 4 bit mode
+>>> m2 = aidapter.model('anthropic:claude-instant-v1') # uses ANTHROPIC_API_KEY env variable
 ```
 
 
