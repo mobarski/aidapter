@@ -150,6 +150,12 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.4.2
+
+- anthropic usage: tokens, characters
+
+- transformers usage: tokens, characters
+
 ### 0.4.1
 
 - remove prompt from transformers output

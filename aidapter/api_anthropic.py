@@ -31,7 +31,14 @@ class ChatModel(base.BaseModel):
         #
         out = {}
         out['text'] = resp.get('completion','')
-        out['usage'] = {} # TODO
+        out['usage'] = {
+            'prompt_tokens': anthropic.count_tokens(kwargs['prompt']),
+            'resp_tokens': anthropic.count_tokens(out['text']),
+            'total_tokens': anthropic.count_tokens(kwargs['prompt']) + anthropic.count_tokens(out['text']),
+            'prompt_chars': len(kwargs['prompt']),
+            'resp_chars': len(out['text']),
+            'total_chars': len(kwargs['prompt']) + len(out['text']),
+        }
         out['kwargs'] = kwargs
         out['resp'] = resp
         # TODO usage

@@ -22,7 +22,7 @@ model.retry_tries = 1
 print(model.complete('there was a little girl who', debug=False))
 print()
 math_prompts = ['2+2=','7*6=','3-7=','2^8=']
-pprint(model.complete(math_prompts, debug=False, limit=5, stop='\n'))
+pprint(model.complete(math_prompts, debug=False, limit=5, stop=["\n"]))
 print(model.id)
 
 # NOPE:

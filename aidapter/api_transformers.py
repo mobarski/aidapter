@@ -55,7 +55,14 @@ class TextModel(base.BaseModel):
         #
         out = {}
         out['text'] = resp_text[len(full_prompt):]
-        out['usage'] = {} # TODO
+        out['usage'] = {
+            'prompt_tokens': prompt_tokens.shape[1],
+            'resp_tokens': resp.shape[1],
+            'total_tokens': prompt_tokens.shape[1] + resp.shape[1],
+            'prompt_chars': len(full_prompt),
+            'resp_chars': len(out['text']),
+            'total_chars': len(full_prompt) + len(out['text']),
+        }
         out['kwargs'] = final_kwargs
         out['resp'] = {'resp':resp, 'prompt_tokens':prompt_tokens}
         # TODO usage
