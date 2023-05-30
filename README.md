@@ -151,6 +151,10 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.4.3
+
+- stop option for transformers
+
 ### 0.4.2
 
 - anthropic usage: tokens, characters

@@ -46,15 +46,30 @@ class TextModel(base.BaseModel):
             temperature = kwargs['temperature'],
             pad_token_id = self.tokenier.eos_token_id,
         )
+        # stop early if stop criteria is met
+        if kwargs['stop']:
+            def stop_fun(ids, scores, **_):
+                output_text = self.tokenier.decode(ids[0])[len(full_prompt):]
+                for s in kwargs['stop']:
+                    if s in output_text:
+                        return True
+            final_kwargs['stopping_criteria'] = [stop_fun]
+        #
         prompt_tokens = self.tokenier.encode(full_prompt, return_tensors='pt')
         resp = self.model.generate(
                 prompt_tokens.to("cuda"),
                 **final_kwargs
             )
         resp_text = self.tokenier.decode(resp[0], skip_special_tokens=True)
+        output_text = resp_text[len(full_prompt):]
+        # remove stop criteria from output
+        if kwargs['stop']:
+            for s in sorted(kwargs['stop'], key=lambda x: len(x), reverse=True):
+                if s in output_text:
+                    output_text = output_text.split(s)[0]
         #
         out = {}
-        out['text'] = resp_text[len(full_prompt):]
+        out['text'] = output_text
         out['usage'] = {
             'prompt_tokens': prompt_tokens.shape[1],
             'resp_tokens': resp.shape[1],
