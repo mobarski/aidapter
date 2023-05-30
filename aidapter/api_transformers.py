@@ -35,9 +35,11 @@ class TextModel(base.BaseModel):
         kwargs = self.get_api_kwargs(kw)
         kwargs['stop'] = kwargs.get('stop') or [] # FIX empty value
         kwargs['model'] = self.name
-        #
+        # full_prompt
         system = kw.get('system','')
+        start = kw.get('start','')
         full_prompt = prompt if not system else f'{system.rstrip()}\n\n{prompt}'
+        full_prompt += start
         kwargs['prompt'] = full_prompt
         #
         #kwargs = self.rename_kwargs(kwargs) # NOT USED - direct mapping below
@@ -69,7 +71,7 @@ class TextModel(base.BaseModel):
                     output_text = output_text.split(s)[0]
         #
         out = {}
-        out['text'] = output_text
+        out['text'] = start + output_text
         out['usage'] = {
             'prompt_tokens': prompt_tokens.shape[1],
             'resp_tokens': resp.shape[1],

@@ -21,6 +21,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 - caching
 - usage tracking
 - automatic retries
+- response priming
 
 
 ## Usage examples
@@ -62,11 +63,13 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 
 
-**model.complete**(prompt, system='', stop=[], limit=100, temperature=0, cache='use', debug=False) **-> str | list | dict**
+**model.complete**(prompt, system='', start='', stop=[], limit=100, temperature=0, cache='use', debug=False) **-> str | list | dict**
 
 - `prompt` - main prompt or list of prompts
 
 - `system` - system prompt
+
+- `start` - the text that will be appended to the start of the response and to the end of the prompt (aka response priming)
 
 - `stop` - list of strings upon which to stop generating
 
@@ -151,9 +154,13 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.4.4
+
+- response priming (`start` option)
+
 ### 0.4.3
 
-- stop option for transformers
+- `stop` option for transformers
 
 ### 0.4.2
 

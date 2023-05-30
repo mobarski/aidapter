@@ -27,14 +27,17 @@ class TextModel(base.BaseModel):
         kwargs['model'] = self.name
         #
         system = kw.get('system','')
+        start = kw.get('start','')
         full_prompt = prompt if not system else f'{system.rstrip()}\n\n{prompt}'
+        full_prompt += start
         kwargs['prompt'] = full_prompt
         #
         kwargs = self.rename_kwargs(kwargs)
         resp = self.client.generate(**kwargs)
+        output_text = resp[0]
         #
         out = {}
-        out['text'] = resp[0]
+        out['text'] = start + output_text # TODO: detect and handle start duplication
         out['usage'] = {} # TODO
         out['kwargs'] = kwargs
         out['resp'] = resp

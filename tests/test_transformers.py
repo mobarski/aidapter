@@ -8,7 +8,7 @@ import aidapter
 
 # model_id = 'transformers:roneneldan/TinyStories-33M'
 # model_id = 'transformers:RWKV/rwkv-raven-1b5'
-model_id = 'transformers:tiiuae/falcon-rw-1b:trust'
+#model_id = 'transformers:tiiuae/falcon-rw-1b:trust'
 # model_id = 'transformers:RWKV/rwkv-raven-3b'
 # model_id = 'transformers:TheBloke/guanaco-7B-HF:4bit'
 # model_id = 'transformers:project-baize/baize-v2-7b:4bit'

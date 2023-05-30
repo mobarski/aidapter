@@ -23,21 +23,24 @@ class ChatModel(base.BaseModel):
         kwargs['model'] = self.name
         #
         system = kw.get('system','')
+        start = kw.get('start','')
         full_prompt = prompt if not system else f'{system.rstrip()}\n\n{prompt}'
+        full_prompt += start
         kwargs['prompt'] = f"{anthropic.HUMAN_PROMPT} {full_prompt}{anthropic.AI_PROMPT}"
         #
         kwargs = self.rename_kwargs(kwargs)
         resp = self.client.completion(**kwargs)
+        output_text = resp.get('completion','')
         #
         out = {}
-        out['text'] = resp.get('completion','')
+        out['text'] = start + output_text # TODO detect and handle start duplication
         out['usage'] = {
             'prompt_tokens': anthropic.count_tokens(kwargs['prompt']),
-            'resp_tokens': anthropic.count_tokens(out['text']),
-            'total_tokens': anthropic.count_tokens(kwargs['prompt']) + anthropic.count_tokens(out['text']),
+            'resp_tokens': anthropic.count_tokens(output_text),
+            'total_tokens': anthropic.count_tokens(kwargs['prompt']) + anthropic.count_tokens(output_text),
             'prompt_chars': len(kwargs['prompt']),
-            'resp_chars': len(out['text']),
-            'total_chars': len(kwargs['prompt']) + len(out['text']),
+            'resp_chars': len(output_text),
+            'total_chars': len(kwargs['prompt']) + len(output_text),
         }
         out['kwargs'] = kwargs
         out['resp'] = resp
