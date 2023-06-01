@@ -154,6 +154,12 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.5
+
+- initial support for embedding models:
+  - OpenAI
+  - Cohere
+
 ### 0.4.4
 
 - response priming (`start` option)

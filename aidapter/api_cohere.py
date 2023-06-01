@@ -14,14 +14,15 @@ def use_key(key):
 if not getattr(cohere, 'api_key', None):
 	use_key(os.getenv('CO_API_KEY',''))
 
-class TextModel(base.BaseModel):
+
+class TextModel(base.CompletionModel):
     RENAME_KWARGS  = {'stop':'stop_sequences', 'limit':'max_tokens'}
 
     def __init__(self, name, kwargs):
         super().__init__(name, kwargs)
         self.client = cohere.Client(cohere.api_key)
 
-    def complete_one(self, prompt, **kw) -> dict:
+    def transform_one(self, prompt, **kw) -> dict:
         kwargs = self.get_api_kwargs(kw)
         kwargs['stop'] = kwargs.get('stop') or [] # FIX empty value
         kwargs['model'] = self.name
@@ -37,10 +38,28 @@ class TextModel(base.BaseModel):
         output_text = resp[0]
         #
         out = {}
-        out['text'] = start + output_text # TODO: detect and handle start duplication
+        out['output'] = start + output_text # TODO: detect and handle start duplication
         out['usage'] = {} # TODO
         out['kwargs'] = kwargs
         out['resp'] = resp
         # TODO usage
         # TODO error
+        return out
+
+
+class EmbeddingModel(base.EmbeddingModel):
+
+    def __init__(self, name, kwargs):
+        super().__init__(name, kwargs)
+        self.client = cohere.Client(cohere.api_key)
+
+    def transform_one(self, text, **kw):
+        return self.embed_batch([text], **kw)[0]
+
+    def embed_batch(self, texts, **kw):
+        resp = self.client.embed(texts, model=self.name)
+        #
+        out = []
+        for x in resp.embeddings:
+            out.append({'output': x})
         return out

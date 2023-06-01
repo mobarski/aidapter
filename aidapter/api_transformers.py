@@ -7,9 +7,8 @@ import os
 def use_key(key):
 	pass
 
-# TODO: stop
 
-class TextModel(base.BaseModel):
+class TextModel(base.CompletionModel):
     RENAME_KWARGS  = {'limit':'max_new_tokens'}
 
     def __init__(self, name, kwargs, options):
@@ -31,7 +30,7 @@ class TextModel(base.BaseModel):
             kw['trust_remote_code'] = True
         self.model = transformers.AutoModelForCausalLM.from_pretrained(name, device_map="auto", **kw)
 
-    def complete_one(self, prompt, **kw) -> dict:
+    def transform_one(self, prompt, **kw) -> dict:
         kwargs = self.get_api_kwargs(kw)
         kwargs['stop'] = kwargs.get('stop') or [] # FIX empty value
         kwargs['model'] = self.name
@@ -71,14 +70,14 @@ class TextModel(base.BaseModel):
                     output_text = output_text.split(s)[0]
         #
         out = {}
-        out['text'] = start + output_text
+        out['output'] = start + output_text
         out['usage'] = {
             'prompt_tokens': prompt_tokens.shape[1],
             'resp_tokens': resp.shape[1],
             'total_tokens': prompt_tokens.shape[1] + resp.shape[1],
             'prompt_chars': len(full_prompt),
-            'resp_chars': len(out['text']),
-            'total_chars': len(full_prompt) + len(out['text']),
+            'resp_chars': len(out['output']),
+            'total_chars': len(full_prompt) + len(out['output']),
         }
         out['kwargs'] = final_kwargs
         out['resp'] = {'resp':resp, 'prompt_tokens':prompt_tokens}

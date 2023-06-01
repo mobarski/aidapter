@@ -6,16 +6,16 @@ import sys
 import os
 
 def use_key(key):
-	openai.api_key = key
+    openai.api_key = key
 if not openai.api_key:
-	use_key(os.getenv('OPENAI_API_KEY',''))
+    use_key(os.getenv('OPENAI_API_KEY',''))
 
 
-class ChatModel(base.BaseModel):
+class ChatModel(base.CompletionModel):
     RENAME_KWARGS = {'limit':'max_tokens'}
 
 
-    def complete_one(self, prompt, **kw) -> dict:
+    def transform_one(self, prompt, **kw) -> dict:
         kwargs = self.get_api_kwargs(kw)
         kwargs['stop'] = kwargs.get('stop') or None # FIX empty value
         kwargs['model'] = self.name
@@ -34,17 +34,17 @@ class ChatModel(base.BaseModel):
         output_text = resp['choices'][0]['message']['content']
         #
         out = {}
-        out['text'] = start + output_text # TODO: detect and handle start duplication
+        out['output'] = start + output_text # TODO: detect and handle start duplication
         out['usage'] = resp['usage']
         out['kwargs'] = kwargs
         out['resp'] = resp
         return out
 
 
-class TextModel(base.BaseModel):
-     RENAME_KWARGS = {'limit':'max_tokens'}
+class TextModel(base.CompletionModel):
+    RENAME_KWARGS = {'limit':'max_tokens'}
 
-     def complete_one(self, prompt, **kw) -> dict:
+    def transform_one(self, prompt, **kw) -> dict:
         kwargs = self.get_api_kwargs(kw)
         kwargs['stop'] = kwargs.get('stop') or None # FIX empty value
         kwargs['model'] = self.name
@@ -60,8 +60,24 @@ class TextModel(base.BaseModel):
         output_text = resp['choices'][0]['text']
         #
         out = {}
-        out['text'] = start + output_text
+        out['output'] = start + output_text
         out['usage'] = resp['usage']
         out['kwargs'] = kwargs
         out['resp'] = resp
+        return out
+
+
+class EmbeddingModel(base.EmbeddingModel):
+    def transform_one(self, text, **kw):
+        return self.embed_batch([text], **kw)[0]
+
+    def embed_batch(self, texts, **kw):
+        kwargs = {'input':texts, 'model':self.name}
+        resp = openai.Embedding.create(**kwargs)
+        #
+        out = []
+        for x in resp['data']:
+            out.append({
+                 'output': x['embedding'],
+            })
         return out

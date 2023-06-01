@@ -10,14 +10,15 @@ def use_key(key):
 if not getattr(anthropic, 'api_key', None):
 	use_key(os.getenv('ANTHROPIC_API_KEY',''))
 
-class ChatModel(base.BaseModel):
+
+class ChatModel(base.CompletionModel):
     RENAME_KWARGS  = {'stop':'stop_sequences', 'limit':'max_tokens_to_sample'}
 
     def __init__(self, name, kwargs):
         super().__init__(name, kwargs)
         self.client = anthropic.Client(anthropic.api_key)
 
-    def complete_one(self, prompt, **kw) -> dict:
+    def transform_one(self, prompt, **kw) -> dict:
         kwargs = self.get_api_kwargs(kw)
         kwargs['stop'] = kwargs.get('stop') or [] # FIX empty value
         kwargs['model'] = self.name
@@ -33,7 +34,7 @@ class ChatModel(base.BaseModel):
         output_text = resp.get('completion','')
         #
         out = {}
-        out['text'] = start + output_text # TODO detect and handle start duplication
+        out['output'] = start + output_text # TODO detect and handle start duplication
         out['usage'] = {
             'prompt_tokens': anthropic.count_tokens(kwargs['prompt']),
             'resp_tokens': anthropic.count_tokens(output_text),
