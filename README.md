@@ -4,6 +4,8 @@ Simple adapter for many language models -  remote (OpenAI, AnthropicAI, CohereAI
 
 Facilitates loading of many new models (Guanaco, Falcon, Vicuna, etc) in 16/8/4 bit modes.
 
+It also supports embedding models (OpenAI, CohereAI, Sentence Transformers).
+
 ## Installation
 
 :construction: This is pre-alpha software. Anything can change without any notice.
@@ -46,10 +48,28 @@ pip install git+https://github.com/mobarski/aidapter.git
 ```
 
 **multiple models:**
+
 ```python
 >>> m1 = aidapter.model('transformers:ehartford/Wizard-Vicuna-13B-Uncensored:4bit') # 4 bit mode
 >>> m2 = aidapter.model('anthropic:claude-instant-v1') # uses ANTHROPIC_API_KEY env variable
 ```
+
+**embeddings:**
+
+```python
+>>> model = aidapter.model('sentence-transformers:multi-qa-mpnet-base-dot-v1')
+>>> vector = model.embed('mighty indeed', debug=False)
+>>> vector[:5]
+[-0.07946087, -0.2150347, -0.33358946, 0.18340564, 0.16403404]
+```
+
+```python
+>>> vectors = model.embed(['this is the way', 'so say we all']) # parallel / batch processing
+>>> [x[:5] for x in vectors]
+[[0.037638217, -0.30608281, -0.3064257, -0.46715638, -0.2608084],
+ [-0.063842215, -0.16669855, -0.22363697, -0.2893797, 0.060464755]]
+```
+
 
 
 ## API
@@ -83,7 +103,9 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 - `debug` - if True, the function will return a dictionary (or a list of dictionaries) containing internal objects / values
 
+**model.embed**(input) -> **list | list[list]**
 
+- `input` - text or list of texts
 
 **model configuration:**
 
@@ -156,9 +178,10 @@ API key env. variable: **CO_API_KEY**
 
 ### 0.5
 
-- initial support for embedding models:
+- initial support for embedding models (requires more work with batch / parallel processing):
   - OpenAI
   - Cohere
+  - Sentence Transformers
 
 ### 0.4.4
 

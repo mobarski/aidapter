@@ -24,6 +24,9 @@ def model(model_id, **kwargs):
 	elif brand=='transformers':
 		from . import api_transformers
 		model = api_transformers.TextModel(name, kwargs, options)
+	elif brand=='sentence-transformers':
+		from . import api_sentence_transformers
+		model = api_sentence_transformers.EmbeddingModel(name, kwargs, options)
 	else:
 		raise ValueError(f'unknown brand: {brand}')
 	#
