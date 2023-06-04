@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
 	name='aidapter',
-	version='0.5.0',
+	version='0.5.1',
 	description='AI adapter / facade',
 	author='Maciej Obarski',
 	install_requires=[

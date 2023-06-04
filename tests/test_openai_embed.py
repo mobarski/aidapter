@@ -4,13 +4,11 @@ from pprint import pprint
 import aidapter
 
 model = aidapter.model('openai:text-embedding-ada-002')
-vector = model.embed('hello world', debug=False)
-pprint(vector[:5])
 
-vectors = model.embed(['hello','world'])
-pprint([x[:5] for x in vectors])
+vector = model.embed('mighty indeed', limit=5)
+pprint(vector)
 
-#vectors = model.embed(['hello','world'], debug=True)
-#pprint(vectors)
+vectors = model.embed(['this is the way', 'so say we all'], limit=5)
+pprint(vectors)
 
 pprint(model.usage)

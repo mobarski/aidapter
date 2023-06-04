@@ -72,12 +72,13 @@ class EmbeddingModel(base.EmbeddingModel):
         return self.embed_batch([text], **kw)[0]
 
     def embed_batch(self, texts, **kw):
+        limit = kw.get('limit')
         kwargs = {'input':texts, 'model':self.name}
         resp = openai.Embedding.create(**kwargs)
         #
         out = []
         for x in resp['data']:
             out.append({
-                 'output': x['embedding'],
+                 'output': x['embedding'][:limit],
             })
         return out

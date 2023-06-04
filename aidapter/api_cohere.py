@@ -57,9 +57,10 @@ class EmbeddingModel(base.EmbeddingModel):
         return self.embed_batch([text], **kw)[0]
 
     def embed_batch(self, texts, **kw):
+        limit = kw.get('limit')
         resp = self.client.embed(texts, model=self.name)
         #
         out = []
         for x in resp.embeddings:
-            out.append({'output': x})
+            out.append({'output': x[:limit]})
         return out

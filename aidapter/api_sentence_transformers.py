@@ -10,12 +10,14 @@ class EmbeddingModel(base.EmbeddingModel):
         self.model = SentenceTransformer(name)
 
     def transform_one(self, text, **kw):
+
         return self.embed_batch([text], **kw)[0]
 
     def embed_batch(self, texts, **kw):
+        limit = kw.get('limit')
         resp = self.model.encode(texts)
         #
         out = []
         for x in resp:
-            out.append({'output': list(x)})
+            out.append({'output': list(x)[:limit]})
         return out

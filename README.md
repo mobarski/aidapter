@@ -8,7 +8,7 @@ It also supports embedding models (OpenAI, CohereAI, Sentence Transformers).
 
 ## Installation
 
-:construction: This is pre-alpha software. Anything can change without any notice.
+:construction: This is experimental software. Anything can change without any notice.
 
 ```
 pip install git+https://github.com/mobarski/aidapter.git
@@ -28,37 +28,25 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 ## Usage examples
 
-**simple usage:**
+**completion:**
 
 ```python
 >>> import aidapter
 >>> model = aidapter.model('openai:gpt-3.5-turbo') # uses OPENAI_API_KEY env variable
 >>> model.complete('2+2=')
 4
+```
+
+```python
 >>> model.complete(['2+2=','7*6=']) # parallel calls
 ['4', '42']
-```
-
-**persistent cache and usage tracking:**
-
-```python
->>> import shelve
->>> model.cache = shelve.open('/tmp/aidapter.cache') # persistant disk cache
->>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking
-```
-
-**multiple models:**
-
-```python
->>> m1 = aidapter.model('transformers:ehartford/Wizard-Vicuna-13B-Uncensored:4bit') # 4 bit mode
->>> m2 = aidapter.model('anthropic:claude-instant-v1') # uses ANTHROPIC_API_KEY env variable
 ```
 
 **embeddings:**
 
 ```python
 >>> model = aidapter.model('sentence-transformers:multi-qa-mpnet-base-dot-v1')
->>> vector = model.embed('mighty indeed', debug=False)
+>>> vector = model.embed('mighty indeed')
 >>> vector[:5]
 [-0.07946087, -0.2150347, -0.33358946, 0.18340564, 0.16403404]
 ```
@@ -70,20 +58,35 @@ pip install git+https://github.com/mobarski/aidapter.git
  [-0.063842215, -0.16669855, -0.22363697, -0.2893797, 0.060464755]]
 ```
 
+**multiple models:**
+
+```python
+>>> m1 = aidapter.model('transformers:ehartford/Wizard-Vicuna-13B-Uncensored:4bit') # 4 bit mode
+>>> m2 = aidapter.model('anthropic:claude-instant-v1') # uses ANTHROPIC_API_KEY env variable
+```
+
+**persistent cache and usage tracking:**
+
+```python
+>>> import shelve
+>>> model.cache = shelve.open('/tmp/aidapter.cache') # persistant disk cache
+>>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking
+```
+
 
 
 ## API
 
 
 
-**aidapter.model**(model_id, \*\*api_kwargs) **-> model**
+aidapter.**model**(model_id, \*\*api_kwargs) **-> model**
 
 - `model_id` - model identifier in the following format `<vendor_name>:<model_name>`
 - `api_kwargs` - default API arguments
 
 
 
-**model.complete**(prompt, system='', start='', stop=[], limit=100, temperature=0, cache='use', debug=False) **-> str | list | dict**
+model.**complete**(prompt, system='', start='', stop=[], limit=100, temperature=0, cache='use', debug=False) **-> str | list | dict**
 
 - `prompt` - main prompt or list of prompts
 
@@ -96,16 +99,23 @@ pip install git+https://github.com/mobarski/aidapter.git
 - `limit` - maximum number of tokens to generate before stopping (aka max_new_tokens, max_tokens_to_sample)
 
 - `temperature` - amount of randomness
+
 - `cache` - cache usage:
+  
   - `use` - use the cache if the temperature is 0 (default)
   - `skip` - don't use the cache
   - `force` - use the cache even if the temperature is not 0
-
+  
 - `debug` - if True, the function will return a dictionary (or a list of dictionaries) containing internal objects / values
 
-**model.embed**(input) -> **list | list[list]**
+  
+
+model.**embed**(input, limit=None) -> **list | list[list]**
 
 - `input` - text or list of texts
+- `limit` - limit the vector length to first n dimensions (default = None = no limit)
+
+
 
 **model configuration:**
 
@@ -175,6 +185,10 @@ API key env. variable: **CO_API_KEY**
   
 
 ## Change log
+
+### 0.5.1
+
+- `limit` option for embedding models
 
 ### 0.5
 

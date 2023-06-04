@@ -165,8 +165,9 @@ class EmbeddingModel(BaseModel):
     # MOCK
 
     def transform_one(self, text, debug=False, cache='use', **kw):
+        limit = kw.get('limit')
         return {
-            'output': [1,2,3,4,5],
+            'output': [1,2,3,4,5][:limit],
         }
 
 # HELPERS

@@ -4,13 +4,11 @@ from pprint import pprint
 import aidapter
 
 model = aidapter.model('sentence-transformers:multi-qa-mpnet-base-dot-v1')
-vector = model.embed('mighty indeed')
-pprint(vector[:5])
 
-vectors = model.embed(['this is the way', 'so say we all'])
-pprint([x[:5] for x in vectors])
+vector = model.embed('mighty indeed', limit=5)
+pprint(vector)
 
-#vectors = model.embed(['hello','world'], debug=True)
-#pprint(vectors)
+vectors = model.embed(['this is the way', 'so say we all'], limit=5)
+pprint(vectors)
 
 pprint(model.usage)
