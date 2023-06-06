@@ -122,7 +122,9 @@ class BaseModel:
         return cache=='skip'
 
     def get_cache_key(self, input, kwargs, kw):
-        kwargs_str = str([(k,kwargs[k]) for k in sorted(kwargs)])
+        all_kwargs = kwargs.copy()
+        all_kwargs.update(kw)
+        kwargs_str = str([(k,all_kwargs[k]) for k in sorted(all_kwargs)])
         cache_key = self.name +':'+ md5(f'{input}:{kwargs_str}')
         return cache_key
 

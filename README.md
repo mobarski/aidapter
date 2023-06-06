@@ -186,6 +186,10 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.5.2
+
+- fix: kw handling in get_cache_key
+
 ### 0.5.1
 
 - `limit` option for embedding models
