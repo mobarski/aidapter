@@ -13,7 +13,7 @@ class TextModel(base.CompletionModel):
 
     def __init__(self, name, kwargs, options):
         super().__init__(name, kwargs)
-        self.tokenier = transformers.AutoTokenizer.from_pretrained(name)
+        self.tokenizer = transformers.AutoTokenizer.from_pretrained(name)
         # OPTIONS
         kw = {}
         if '16bit' in options:
@@ -45,23 +45,23 @@ class TextModel(base.CompletionModel):
         final_kwargs = dict(
             max_new_tokens = kwargs['limit'],
             temperature = kwargs['temperature'],
-            pad_token_id = self.tokenier.eos_token_id,
+            pad_token_id = self.tokenizer.eos_token_id,
         )
         # stop early if stop criteria is met
         if kwargs['stop']:
             def stop_fun(ids, scores, **_):
-                output_text = self.tokenier.decode(ids[0])[len(full_prompt):]
+                output_text = self.tokenizer.decode(ids[0])[len(full_prompt):]
                 for s in kwargs['stop']:
                     if s in output_text:
                         return True
             final_kwargs['stopping_criteria'] = [stop_fun]
         #
-        prompt_tokens = self.tokenier.encode(full_prompt, return_tensors='pt')
+        prompt_tokens = self.tokenizer.encode(full_prompt, return_tensors='pt')
         resp = self.model.generate(
                 prompt_tokens.to("cuda"),
                 **final_kwargs
             )
-        resp_text = self.tokenier.decode(resp[0], skip_special_tokens=True)
+        resp_text = self.tokenizer.decode(resp[0], skip_special_tokens=True)
         output_text = resp_text[len(full_prompt):]
         # remove stop criteria from output
         if kwargs['stop']:
