@@ -73,7 +73,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 >>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking
 ```
 
-**function calling interface (selected OpenAI models):**
+**function calling interface*:**
 
 ```python
 >>> def get_weather(city):
@@ -84,7 +84,17 @@ pip install git+https://github.com/mobarski/aidapter.git
 {'function_name': 'get_weather', 'arguments': {'city': 'PL:WARSAW'}}
 ```
 
+\* currently, it works only with selected OpenAI models
 
+**use last_hidden_state from any transformer as a embedding*:**
+
+```python
+>>> model = aidapter.model('transformers:RWKV/rwkv-raven-1b5')
+>>> model.raw_embed_one('mighty indeed')[:5]
+[0.14850381016731262, -0.021324729546904564, 0.09214707463979721, 0.34308338165283203, -0.11288302391767502]
+```
+
+\* requires additional normalization over a corpus
 
 ## API
 
