@@ -73,6 +73,17 @@ pip install git+https://github.com/mobarski/aidapter.git
 >>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking
 ```
 
+**function calling interface (selected OpenAI models):**
+
+```python
+>>> def get_weather(city):
+>>>     "get weather info in a city; city must be all caps after ISO country code and a : separator (e.g. FR:PARIS)"
+>>>     ...
+>>> model = aidapter.model('openai:gpt-3.5-turbo-0613')
+>>> model.complete('Whats the weather in the capital of Poland?', functions=[get_weather])
+{'function_name': 'get_weather', 'arguments': {'city': 'PL:WARSAW'}}
+```
+
 
 
 ## API
@@ -86,7 +97,7 @@ aidapter.**model**(model_id, \*\*api_kwargs) **-> model**
 
 
 
-model.**complete**(prompt, system='', start='', stop=[], limit=100, temperature=0, cache='use', debug=False) **-> str | list | dict**
+model.**complete**(prompt, system='', start='', stop=[], limit=100, temperature=0, functions=[], cache='use', debug=False) **-> str | list | dict**
 
 - `prompt` - main prompt or list of prompts
 
@@ -99,6 +110,8 @@ model.**complete**(prompt, system='', start='', stop=[], limit=100, temperature=
 - `limit` - maximum number of tokens to generate before stopping (aka max_new_tokens, max_tokens_to_sample)
 
 - `temperature` - amount of randomness
+
+- `functions` - list of functions available to the model (none of them will be executed - only the signatures are used)
 
 - `cache` - cache usage:
   
@@ -189,6 +202,10 @@ API key env. variable: **CO_API_KEY**
   
 
 ## Change log
+
+### 0.5.4
+
+- initial support for the functions argument (works only with selected OpenAI models)
 
 ### 0.5.3
 
