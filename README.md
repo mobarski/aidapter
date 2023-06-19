@@ -77,7 +77,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 ```python
 >>> def get_weather(city):
->>>     "get weather info in a city; city must be all caps after ISO country code and a : separator (e.g. FR:PARIS)"
+>>>     "get weather info for a city; city must be all caps after ISO country code and a : separator (e.g. FR:PARIS)"
 >>>     ...
 >>> model = aidapter.model('openai:gpt-3.5-turbo-0613')
 >>> model.complete('Whats the weather in the capital of Poland?', functions=[get_weather])
