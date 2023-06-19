@@ -10,12 +10,13 @@ import aidapter
 #model_id = 'transformers:RWKV/rwkv-raven-1b5'
 #model_id = 'transformers:tiiuae/falcon-rw-1b:trust'
 # model_id = 'transformers:RWKV/rwkv-raven-3b'
-model_id = 'transformers:TheBloke/guanaco-7B-HF:4bit'
+# model_id = 'transformers:TheBloke/guanaco-7B-HF:4bit'
 # model_id = 'transformers:project-baize/baize-v2-7b:4bit'
 # model_id = 'transformers:tiiuae/falcon-7b:trust'
 # model_id = 'transformers:ehartford/Wizard-Vicuna-13B-Uncensored:4bit'
 # model_id = 'transformers:ehartford/WizardLM-30B-Uncensored:4bit'
 # model_id = 'transformers:timdettmers/guanaco-33b-merged:4bit'
+model_id = 'transformers:WizardLM/WizardCoder-15B-V1.0:4bit'
 
 from pprint import pprint
 print(f'=== {model_id} ===')

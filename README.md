@@ -110,7 +110,7 @@ model.**complete**(prompt, system='', start='', stop=[], limit=100, temperature=
 
   
   
-  **FULL_PROMPT** = `system` + `head` + `prompt` + `tail` + `start`
+  **FULL_PROMPT** = `system` + `prompt` + `start`
   
   
 
