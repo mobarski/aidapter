@@ -109,6 +109,10 @@ model.**complete**(prompt, system='', start='', stop=[], limit=100, temperature=
 - `debug` - if True, the function will return a dictionary (or a list of dictionaries) containing internal objects / values
 
   
+  
+  **FULL_PROMPT** = `system` + `head` + `prompt` + `tail` + `start`
+  
+  
 
 model.**embed**(input, limit=None) -> **list | list[list]**
 
@@ -186,6 +190,10 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.5.3
+
+- initial support for raw_embed_one in transformers (for creating embeddings from ANY transformer models)
+
 ### 0.5.2
 
 - fix: kw handling in get_cache_key
@@ -262,7 +270,11 @@ API key env. variable: **CO_API_KEY**
 
 
 
-## Related projects
+## Reference Materials
 
 - https://github.com/kagisearch/pyllms
+- https://chat.lmsys.org/?leaderboard
+- https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard
+
+
 

@@ -84,3 +84,10 @@ class TextModel(base.CompletionModel):
         # TODO usage
         # TODO error
         return out
+
+    def raw_embed_one(self, text, **kw):
+        input = self.tokenizer.encode(text, return_tensors='pt')
+        outputs = self.model(input, output_hidden_states=True)
+        last_hidden_state = outputs.hidden_states[-1][0]
+        fun = lambda x: x[0].tolist()
+        return fun(last_hidden_state)
