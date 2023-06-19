@@ -94,7 +94,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 [0.14850381016731262, -0.021324729546904564, 0.09214707463979721, 0.34308338165283203, -0.11288302391767502]
 ```
 
-\* requires additional normalization over a corpus
+\* requires additional normalization over a corpus, API will change
 
 ## API
 
