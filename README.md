@@ -73,7 +73,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 >>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking
 ```
 
-**function calling interface*:**
+**function calling interface\*:**
 
 ```python
 >>> def get_weather(city):
@@ -86,7 +86,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 
 \* currently, it works only with selected OpenAI models
 
-**use last_hidden_state from any transformer as a embedding*:**
+**use last_hidden_state from any transformer as a embedding\*:**
 
 ```python
 >>> model = aidapter.model('transformers:RWKV/rwkv-raven-1b5')
