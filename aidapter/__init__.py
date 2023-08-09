@@ -38,7 +38,7 @@ def model(model_id, **kwargs):
 			model = api_hf.EmbeddingModel(name, kwargs, options)
 		else:
 			model = api_hf.TextModel(name, kwargs, options)
-	elif brand=='hf2':
+	elif brand=='hf2' or brand=='huggingface':
 		from . import api_hf2
 		if 'embed' in options:
 			model = api_hf2.EmbeddingModel(name, kwargs, options)

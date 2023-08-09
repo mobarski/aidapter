@@ -29,11 +29,13 @@ class BaseModelV2:
             inputs = [inputs]
         data = inputs if self.batch == 1 else batched(inputs, self.batch)
 
+        # build worker
         def worker(_inputs):
             return self.transform_batch(_inputs, **kwargs)
         if self.retry_kwargs:
             worker = retry(**self.retry_kwargs)(worker)
-        worker = self.get_memoize()(worker)
+        if kwargs.get('cache',True):
+            worker = self.get_memoize()(worker)
 
         out = []
         with Pool(self.workers) as pool:

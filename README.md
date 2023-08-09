@@ -1,6 +1,6 @@
 # aidapter
 
-Simple adapter for many language models -  remote (HF, OpenAI, AnthropicAI, CohereAI) and local (transformers library).
+Simple adapter for many language models -  remote (Hugging Face, OpenAI, AnthropicAI, CohereAI) and local (transformers library).
 
 Facilitates loading of many new models (Guanaco, Falcon, Vicuna, etc) in 16/8/4 bit modes.
 
@@ -220,6 +220,11 @@ API key env. variable: **CO_API_KEY**
   
 
 ## Change log
+
+### 0.6.1
+
+- handle cache=False in BaseModelV2.transform_many
+- hf2 brand renamed to huggingface
 
 ### 0.6
 
