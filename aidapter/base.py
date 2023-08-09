@@ -2,6 +2,7 @@ from tqdm import tqdm
 from retry.api import retry_call
 
 from multiprocessing.dummy import Pool
+from itertools import islice
 from datetime import date
 from time import time
 import hashlib
@@ -25,6 +26,7 @@ class BaseModel:
         self.retry_delay = 0.1
         self.retry_backoff = 3
         self.workers = 4
+        self.batch = 1
         self.show_progress = False
         self.id = '' # this will be set by the factory function
 
@@ -45,8 +47,12 @@ class BaseModel:
             keys = self.get_usage_keys()
             for key in keys:
                 data = self.usage.get(key, {})
+                use_incr = hasattr(data, 'incr')
                 for k,v in usage.items():
-                    data[k] = data.get(k,0) + v
+                    if use_incr:
+                        data.incr(k, v)
+                    else:
+                        data[k] = data.get(k,0) + v
                 self.usage[key] = data
 
     def get_usage_keys(self):
@@ -86,24 +92,28 @@ class BaseModel:
     def transform_many(self, inputs, cache='use', **kw) -> list[dict]:
         def worker(prompt):
             return self.transform_one_cached(prompt, cache=cache, register=False, **kw)
+        data = inputs if self.batch==1 else batched(inputs, self.batch)
+        # TODO batched
         with Pool(self.workers) as pool:
             out = []
-            with tqdm(total=len(inputs), disable=not self.show_progress) as progress:
-                for x in pool.imap(worker, inputs):
+            with tqdm(total=len(data), disable=not self.show_progress) as progress:
+                for x in pool.imap(worker, data):
                     out.append(x)
                     self.register_usage(x.get('usage',{}))
                     progress.update()
         return out
 
+    # TODO: cache=save
+    # TODO: dont save cache if empty
     def transform_one_cached(self, input, cache='use', register=True, **kw) -> dict:
         t0 = time()
         kwargs = self.get_api_kwargs(kw)
+        cache_key = self.get_cache_key(input, kwargs, kw)
         if self.skip_cache_condition(kwargs, kw, cache):
             resp = self.transform_one_retry(input, **kw)
             resp['usage'] = resp.get('usage', {})
             resp['usage']['cache_skip'] = 1
         else:
-            cache_key = self.get_cache_key(input, kwargs, kw)
             if cache_key in self.cache:
                 resp = self.cache[cache_key]
                 resp['usage'] = {f'cached_{k}':v for k,v in resp.get('usage',{}).items() if 'cache' not in k}
@@ -119,7 +129,7 @@ class BaseModel:
         return resp
 
     def skip_cache_condition(self, kwargs, kw, cache):
-        return cache=='skip'
+        return cache in ('skip','save')
 
     def get_cache_key(self, input, kwargs, kw):
         all_kwargs = kwargs.copy()
@@ -176,6 +186,11 @@ class EmbeddingModel(BaseModel):
 
 def md5(text):
     return hashlib.md5(text.encode()).hexdigest()
+
+def batched(data, n, as_type=list):
+    it = iter(data)
+    while batch := as_type(islice(it, n)):
+        yield batch
 
 class DummyKV(dict):
     "in-memory key-value store with shelve-like interface"

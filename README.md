@@ -1,6 +1,6 @@
 # aidapter
 
-Simple adapter for many language models -  remote (OpenAI, AnthropicAI, CohereAI) and local (transformers library).
+Simple adapter for many language models -  remote (HF, OpenAI, AnthropicAI, CohereAI) and local (transformers library).
 
 Facilitates loading of many new models (Guanaco, Falcon, Vicuna, etc) in 16/8/4 bit modes.
 
@@ -72,6 +72,14 @@ pip install git+https://github.com/mobarski/aidapter.git
 >>> model.cache = shelve.open('/tmp/aidapter.cache') # persistant disk cache
 >>> model.usage = shelve.open('/tmp/aidapter.usage') # persistant usage tracking
 ```
+
+```python
+>>> import diskcache as dc
+>>> model.cache = dc.Cache('/tmp/aidapter.cache') # persistant disk cache
+>>> model.usage = dc.Cache('/tmp/aidapter.usage') # persistant usage tracking
+```
+
+
 
 **function calling interface\*:**
 
@@ -213,6 +221,17 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.6
+
+- initial support for HF API embeddings
+- BaseModelV2
+  - cleaner code
+  - diskcache support
+  - batch + threads support
+  - retry configuration
+  - progress update
+
+
 ### 0.5.4
 
 - initial support for the functions argument (works only with selected OpenAI models)
@@ -297,11 +316,19 @@ API key env. variable: **CO_API_KEY**
 
 
 
+### Next
+
+- HF API text generation
+- llama.cpp models (GGML!)
+- strangulate BaseModel with BaseModelV2
+
+
+
 ## Reference Materials
 
 - https://github.com/kagisearch/pyllms
 - https://chat.lmsys.org/?leaderboard
 - https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard
-
-
+- https://huggingface.co/spaces/mteb/leaderboard
+- https://huggingface.co/blog/getting-started-with-embeddings
 

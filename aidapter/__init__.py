@@ -1,4 +1,6 @@
 
+# TODO: kind : brand : name ???
+
 def model(model_id, **kwargs):
 	"model factory function"
 	brand,_,name = model_id.partition(':')
@@ -24,9 +26,24 @@ def model(model_id, **kwargs):
 	elif brand=='transformers':
 		from . import api_transformers
 		model = api_transformers.TextModel(name, kwargs, options)
+	elif brand=='vllm':
+		from . import api_vllm
+		model = api_vllm.TextModel(name, kwargs, options)
 	elif brand=='sentence-transformers':
 		from . import api_sentence_transformers
 		model = api_sentence_transformers.EmbeddingModel(name, kwargs, options)
+	elif brand=='hf':
+		from . import api_hf
+		if 'embed' in options:
+			model = api_hf.EmbeddingModel(name, kwargs, options)
+		else:
+			model = api_hf.TextModel(name, kwargs, options)
+	elif brand=='hf2':
+		from . import api_hf2
+		if 'embed' in options:
+			model = api_hf2.EmbeddingModel(name, kwargs, options)
+		else:
+			model = api_hf2.TextModel(name, kwargs, options)
 	else:
 		raise ValueError(f'unknown brand: {brand}')
 	#
