@@ -19,6 +19,7 @@ pip install git+https://github.com/mobarski/aidapter.git
 ## Features
 
 - simple, unified API to many models (remote and local)
+- batching
 - parallel calls
 - caching
 - usage tracking
@@ -220,6 +221,11 @@ API key env. variable: **CO_API_KEY**
   
 
 ## Change log
+
+### 0.6.2
+
+- as_iter option in BaseModelV2.transform
+- removed BaseModelV2.register_progress
 
 ### 0.6.1
 

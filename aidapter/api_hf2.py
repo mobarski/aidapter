@@ -33,19 +33,22 @@ def hf_api_query(payload, model_id, endpoint):
 # TODO: different models -> different output shapes
 
 class EmbeddingModel(base.BaseModelV2):
+    brand = 'huggingface'
 
     def embed(self, inputs, **kwargs):
-        return self.transform_many(inputs, **kwargs)
+        return self.transform(inputs, **kwargs)
 
     def transform_batch(self, inputs, **kwargs):
         limit = kwargs.get('limit')
         resp = hf_api_query(inputs, self.name, 'pipeline/feature-extraction')
         output = [x[:limit] for x in resp]
+        self.register_usage({'api-calls':1})
         return output
 
 # === TEXT ========================================================================================
 
 class TextModel(base.BaseModelV2):
+    brand = 'huggingface'
 
     def complete(self, prompt, **kwargs):
         return self.transform_many(prompt, **kwargs)
