@@ -11,10 +11,11 @@ def model(model_id, **kwargs):
 		model =  api_anthropic.ChatModel(name, kwargs)
 	elif brand=='openai':
 		from . import api_openai
-		if name.startswith('gpt-'):
+		from . import api_openai2
+		if 'embed' in options or 'embedding' in name:
+			model = api_openai2.EmbeddingModel(name, kwargs, options)
+		elif name.startswith('gpt-'):
 			model = api_openai.ChatModel(name, kwargs)
-		elif 'embedding' in name:
-			model = api_openai.EmbeddingModel(name, kwargs)
 		else:
 			model = api_openai.TextModel(name, kwargs)
 	elif brand=='cohere':

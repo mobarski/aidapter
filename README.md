@@ -222,6 +222,10 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.6.3
+
+- OpenAI's embeddings now use BaseModelV2
+
 ### 0.6.2
 
 - as_iter option in BaseModelV2.transform
