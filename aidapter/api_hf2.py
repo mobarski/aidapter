@@ -50,10 +50,10 @@ class EmbeddingModel(base.BaseModelV2):
 class TextModel(base.BaseModelV2):
     brand = 'huggingface'
 
-    def complete(self, prompt, **kwargs):
-        return self.transform_many(prompt, **kwargs)
+    def complete(self, prompts, **kwargs):
+        return self.transform(prompts, **kwargs)
 
     def transform_batch(self, prompts, **kwargs):
         resp = hf_api_query(prompts, self.name, 'models')
-        output = [x['generated_text'] for x in resp]
+        output = [x[0]['generated_text'] for x in resp]
         return output

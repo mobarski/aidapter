@@ -222,6 +222,10 @@ API key env. variable: **CO_API_KEY**
 
 ## Change log
 
+### 0.6.4
+
+- initial support for HF API models
+
 ### 0.6.3
 
 - OpenAI's embeddings now use BaseModelV2
