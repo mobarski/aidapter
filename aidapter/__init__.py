@@ -33,13 +33,7 @@ def model(model_id, **kwargs):
 	elif brand=='sentence-transformers':
 		from . import api_sentence_transformers
 		model = api_sentence_transformers.EmbeddingModel(name, kwargs, options)
-	elif brand=='hf':
-		from . import api_hf
-		if 'embed' in options:
-			model = api_hf.EmbeddingModel(name, kwargs, options)
-		else:
-			model = api_hf.TextModel(name, kwargs, options)
-	elif brand=='hf2' or brand=='huggingface':
+	elif brand=='hf' or brand=='huggingface':
 		from . import api_hf2
 		if 'embed' in options:
 			model = api_hf2.EmbeddingModel(name, kwargs, options)

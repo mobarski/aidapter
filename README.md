@@ -225,6 +225,7 @@ API key env. variable: **CO_API_KEY**
 ### 0.6.4
 
 - initial support for HF API models
+- removed old HF implementation
 
 ### 0.6.3
 
