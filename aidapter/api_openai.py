@@ -30,7 +30,8 @@ class ChatModel(base.CompletionModel):
         kwargs['messages'] = messages
         #kwargs['max_tokens'] = limit # TODO
         functions = kw.get('functions',[]) or kwargs.get('functions',[]) # NEW
-        kwargs['functions'] = [get_signature(f) for f in functions]
+        if functions:
+            kwargs['functions'] = [get_signature(f) for f in functions]
         #
         kwargs = self.rename_kwargs(kwargs)
         resp = openai.ChatCompletion.create(**kwargs)

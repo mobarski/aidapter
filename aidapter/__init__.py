@@ -14,7 +14,7 @@ def model(model_id, **kwargs):
 		from . import api_openai2
 		if 'embed' in options or 'embedding' in name:
 			model = api_openai2.EmbeddingModel(name, kwargs, options)
-		elif name.startswith('gpt-'):
+		elif name.startswith('gpt-') and '-instruct' not in name:
 			model = api_openai.ChatModel(name, kwargs)
 		else:
 			model = api_openai.TextModel(name, kwargs)
@@ -39,6 +39,9 @@ def model(model_id, **kwargs):
 			model = api_hf2.EmbeddingModel(name, kwargs, options)
 		else:
 			model = api_hf2.TextModel(name, kwargs, options)
+	elif brand=='':
+		from . import api_llama_cpp
+		... # TODO
 	else:
 		raise ValueError(f'unknown brand: {brand}')
 	#

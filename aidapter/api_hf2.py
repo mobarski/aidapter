@@ -1,4 +1,5 @@
-from . import base2 as base
+#from . import base2 as base
+import base2 as base
 
 import requests
 import json
@@ -34,9 +35,7 @@ def hf_api_query(payload, model_id, endpoint):
 
 class EmbeddingModel(base.BaseModelV2):
     brand = 'huggingface'
-
-    def embed(self, inputs, **kwargs):
-        return self.transform(inputs, **kwargs)
+    embed = base.BaseModelV2.transform
 
     def transform_batch(self, inputs, **kwargs):
         limit = kwargs.get('limit')
@@ -49,11 +48,20 @@ class EmbeddingModel(base.BaseModelV2):
 
 class TextModel(base.BaseModelV2):
     brand = 'huggingface'
-
-    def complete(self, prompts, **kwargs):
-        return self.transform(prompts, **kwargs)
+    complete = generate = base.BaseModelV2.transform
 
     def transform_batch(self, prompts, **kwargs):
         resp = hf_api_query(prompts, self.name, 'models')
-        output = [x[0]['generated_text'] for x in resp]
+        try:
+            output = [x[0]['generated_text'] for x in resp]
+        except KeyError:
+            output = [x['generated_text'] for x in resp]
         return output
+
+if __name__=="__main__":
+    #model_id = 'Voicelab/vlt5-base-keywords'
+    #model_id = 'bloomberg/KeyBART'
+    model_id = 'ml6team/keyphrase-generation-t5-small-inspec'
+    print(hf_api_query(['this is example text about space and space-exploration','underwater light propagation in antarctica'], model_id, 'models'))
+    model = TextModel(model_id, {},{})
+    print(model.generate(['this is example text about space and space-exploration','underwater light propagation in antarctica']))
